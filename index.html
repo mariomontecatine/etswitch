@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etswitch - Graduación ETSIIT</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        :root {
+            --bg-body: #0e0e10;
+            --bg-panel: #1f1f23;
+            --twitch-purple: #9146FF;
+            --text-main: #efeff1;
+            --text-alt: #adadb8;
+            --red-live: #e91916;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Inter', Helvetica, Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- NAVBAR --- */
+        nav {
+            height: 50px;
+            background-color: #18181b;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            border-bottom: 1px solid #000;
+            justify-content: space-between;
+        }
+        .logo {
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--twitch-purple);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .search-bar {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 5px 10px;
+            width: 400px;
+            color: white;
+        }
+        .user-menu { display: flex; gap: 10px; align-items: center; }
+        .avatar-small { width: 30px; height: 30px; border-radius: 50%; background: #444; }
+        .btn-purple { 
+            background: var(--twitch-purple); color: white; border: none; 
+            padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer;
+        }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .main-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 50px);
+        }
+
+        /* --- SIDEBAR IZQUIERDA --- */
+        .sidebar {
+            width: 240px;
+            background-color: var(--bg-panel);
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border-right: 1px solid #000;
+            flex-shrink: 0;
+        }
+        .sidebar h3 { font-size: 13px; color: var(--text-main); margin-bottom: 10px; text-transform: uppercase; font-weight: 600; }
+        
+        .channel-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+        .channel-row:hover { background: #26262c; border-radius: 4px; }
+        .avatar { width: 30px; height: 30px; border-radius: 50%; background-color: #555; object-fit: cover; }
+        .channel-info { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .name { font-size: 14px; font-weight: bold; }
+        .game { font-size: 12px; color: var(--text-alt); }
+        .viewers { font-size: 12px; display: flex; align-items: center; gap: 4px; }
+        .red-dot { width: 8px; height: 8px; background: var(--red-live); border-radius: 50%; }
+
+        /* --- CONTENIDO CENTRAL (VIDEO) --- */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #000;
+            overflow-y: auto;
+        }
+        
+        .video-wrapper {
+            width: 100%;
+            height: 80%; /* Ajusta según necesidad */
+            background: #000;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        video {
+            width: 100%;
+            height: 100%;
+            max-height: 100%;
+        }
+
+        /* Overlay "EN DIRECTO" */
+        .live-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--red-live);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+            text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        /* Mostrar badge al hacer hover en el wrapper del video */
+        .video-wrapper:hover .live-badge {
+            opacity: 1;
+        }
+
+        .stream-info {
+            padding: 20px;
+            background: var(--bg-body);
+            flex: 1;
+        }
+        .stream-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+        .tags { display: flex; gap: 5px; }
+        .tag { background: #26262c; padding: 2px 8px; border-radius: 10px; font-size: 12px; color: var(--text-alt); font-weight: bold; }
+
+        /* --- CHAT DERECHA --- */
+        .chat-container {
+            width: 340px;
+            background-color: var(--bg-panel);
+            border-left: 1px solid #000;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        .chat-header {
+            height: 50px;
+            border-bottom: 1px solid #2d2d31;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .chat-line { margin-bottom: 6px; word-wrap: break-word; }
+        .chat-user { font-weight: bold; color: var(--twitch-purple); margin-right: 5px; }
+        .chat-user.admin { color: #e91916; } /* Color para usuario admin */
+        
+        .chat-input-area {
+            padding: 20px;
+            border-top: 1px solid #2d2d31;
+        }
+        .chat-input {
+            width: 100%;
+            background: #2f2f35;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            padding: 10px;
+            color: white;
+            outline: none;
+        }
+        .chat-input:focus { border-color: var(--twitch-purple); }
+        .chat-btn-container { display: flex; justify-content: flex-end; margin-top: 10px; }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <svg height="30" width="30" viewBox="0 0 40 40" style="fill: #9146FF;">
+                <path d="M8,13L8,4h25l5,5v20h-9v6l-5-5h-6l-4-4V13H8z M22,25l3-3v-7h-3V25z M13,25l3-3v-7h-3V25z"/>
+            </svg>
+            Etswitch
+        </div>
+        <input type="text" class="search-bar" placeholder="Buscar">
+        <div class="user-menu">
+            <button class="btn-purple">Iniciar sesión</button>
+            <div class="avatar-small"></div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        
+        <aside class="sidebar">
+            <h3>Canales recomendados</h3>
+            
+            <div class="channel-row">
+                <img src="https://api.dicebear.com/7.x/initials/svg?seed=RC" class="avatar">
+                <div class="channel-info">
+                    <span class="name">Rectorado_Gaming</span>
+                    <span class="game">Just Chatting</span>
+                </div>
+                <div class="viewers"><div class="red-dot"></div> 12k</div>
+            </div>
+
+            <div class="channel-row">
+                <img src="https://api.dicebear.com/7.x/initials/svg?seed=DE" class="avatar">
+                <div class="channel-info">
+                    <span class="name">Delegacion_ETSIIT</span>
+                    <span class="game">Cafetería Simulator</span>
+                </div>
+                <div class="viewers"><div class="red-dot"></div> 5.2k</div>
+            </div>
+
+            <div class="channel-row">
+                <img src="https://api.dicebear.com/7.x/initials/svg?seed=AL" class="avatar">
+                <div class="channel-info">
+                    <span class="name">Algoritmia_Pro</span>
+                    <span class="game">Minecraft</span>
+                </div>
+                <div class="viewers"><div class="red-dot"></div> 800</div>
+            </div>
+            
+            <div class="channel-row">
+                <img src="https://api.dicebear.com/7.x/initials/svg?seed=SE" class="avatar">
+                <div class="channel-info">
+                    <span class="name">Secretaría_Wait</span>
+                    <span class="game">Horror Games</span>
+                </div>
+                <div class="viewers"><div class="red-dot"></div> 20k</div>
+            </div>
+        </aside>
+
+        <main class="content">
+            <div class="video-wrapper">
+                <video id="video" autoplay muted controls></video>
+                
+                <div class="live-badge">EN DIRECTO</div>
+            </div>
+
+            <div class="stream-info">
+                <div class="stream-title">🎓 Ceremonia de Graduación ETSIIT 2024/2025 - Evento Principal</div>
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <p style="color: var(--twitch-purple); font-weight: bold;">Canal Oficial ETSIIT</p>
+                        <p style="color: var(--text-alt); font-size: 14px;">Ingeniería Informática y de Telecomunicaciones</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="color: var(--red-live); font-weight: bold; font-size: 18px;">1,402 espectadores</span>
+                    </div>
+                </div>
+                <br>
+                <div class="tags">
+                    <span class="tag">Español</span>
+                    <span class="tag">Graduación</span>
+                    <span class="tag">IRL</span>
+                    <span class="tag">NoMoreExams</span>
+                </div>
+            </div>
+        </main>
+
+        <aside class="chat-container">
+            <div class="chat-header">Chat del stream</div>
+            <div class="chat-messages" id="chatArea">
+                <div class="chat-line" style="color: #adadb8; text-align: center; margin: 20px 0;">Bienvenido al chat de la sala.</div>
+                </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Enviar un mensaje">
+                <div class="chat-btn-container">
+                    <button class="btn-purple" onclick="sendUserMessage()">Chat</button>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <script>
+        // --- 1. CONFIGURACIÓN DEL VIDEO (HLS) ---
+        var video = document.getElementById('video');
+        var source = '/hls/prueba.m3u8'; // Tu ruta original
+
+        if (Hls.isSupported()) {
+            var hls = new Hls();
+            hls.loadSource(source);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                video.play().catch(e => console.log("Autoplay bloqueado por navegador, requiere click"));
+            });
+        }
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = source;
+            video.addEventListener('loadedmetadata', function() {
+                video.play();
+            });
+        }
+
+        // --- 2. LOGICA DEL CHAT SIMULADO ---
+        
+        const chatArea = document.getElementById('chatArea');
+        const chatInput = document.getElementById('chatInput');
+        
+        // Colores aleatorios para los nombres
+        const userColors = ['#ff0000', '#00ff00', '#0000ff', '#e91916', '#9146FF', '#1E90FF', '#FF69B4'];
+        
+        // Base de datos de nombres falsos
+        const fakeUsers = ['oadamuz', 'pgteodoro', 'cincoRaspao', 'jjramos', 'mariomontecatine', 'acallejon', 'suspenso', 'WiresharkEnjoyer', 'Innovasur'];
+        
+        // Base de datos de mensajes falsos
+        const fakeMessages = [
+            'holaaaaaa',
+            'A qué hora dan los diplomas?',
+            'Grandes',
+            'Vamos oscarrrr',
+            'eyy',
+            'lol',
+            'Ese rector va con lag',
+            '¿Alguien tiene apuntes de redes?',
+            'Qué elegante todo',
+            'el que lea esto va a suspender RM',
+            'oleeeeee',
+            'diselo vieo'
+        ];
+
+        function addMessage(user, text, isUser = false) {
+            const div = document.createElement('div');
+            div.className = 'chat-line';
+            
+            const color = isUser ? '#9146FF' : userColors[Math.floor(Math.random() * userColors.length)];
+            const nameSpan = `<span class="chat-user" style="color:${color}">${user}:</span>`;
+            
+            div.innerHTML = `${nameSpan} <span style="color: #efeff1;">${text}</span>`;
+            chatArea.appendChild(div);
+            
+            // Auto scroll abajo
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Bucle para generar mensajes falsos cada X tiempo
+        setInterval(() => {
+            const randomUser = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
+            const randomMsg = fakeMessages[Math.floor(Math.random() * fakeMessages.length)];
+            addMessage(randomUser, randomMsg);
+        }, 3000); // Mensaje cada 3 segundos
+
+        // Función para enviar mensaje del usuario real
+        function sendUserMessage() {
+            const text = chatInput.value.trim();
+            if (text) {
+                addMessage('Tú', text, true);
+                chatInput.value = '';
+            }
+        }
+
+        // Permitir enviar con ENTER
+        chatInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendUserMessage();
+            }
+        });
+
+    </script>
+</body>
+</html>
