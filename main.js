@@ -29,7 +29,7 @@ const chatInput = document.getElementById("chatInput");
 const userColors = [
   "#ff0000",
   "#00ff00",
-  "#0000ff",
+  "#1a1ae7ff",
   "#e91916",
   "#9146FF",
   "#1E90FF",
