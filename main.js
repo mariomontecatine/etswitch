@@ -42,28 +42,34 @@ const fakeUsers = [
   "pgteodoro",
   "cincoRaspao",
   "jjramos",
+  "juanjo",
   "mariomontecatine",
   "acallejon",
   "suspenso",
   "Wireshark",
   "Innovasur",
   "wuolah",
+  "atv",
+  "banqueri",
 ];
 
 // Base de datos de mensajes falsos
 const fakeMessages = [
   "holaaaaaa",
-  "A qué hora dan los diplomas?",
+  "cuanto queda???",
+  "fornait",
   "Grandes",
   "Vamos oscarrrr",
   "eyy",
   "lol",
   "Ese rector va con lag",
   "no va",
+  "se ha quedado pillado",
   "mola",
   "el que lea esto va a suspender RM",
   "oleeeeee",
   "diselo vieo",
+  "por fin joder",
 ];
 
 function addMessage(user, text, isUser = false) {
