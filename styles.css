@@ -29,17 +29,24 @@ nav {
   background-color: #18181b;
   display: flex;
   align-items: center;
-  padding: 0 15px;
+  padding: 0 1rem;
   border-bottom: 1px solid #000;
   justify-content: space-between;
 }
+
 .logo {
-  font-weight: 800;
-  font-size: 20px;
-  color: var(--twitch-purple);
   display: flex;
   align-items: center;
   gap: 5px;
+  color: var(--twitch-purple);
+}
+h1 {
+  font-weight: 800;
+  font-size: 20px;
+}
+
+#logoUGR {
+  width: 2.5rem;
 }
 .search-bar {
   background: #000;

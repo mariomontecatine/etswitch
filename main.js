@@ -29,7 +29,6 @@ const chatInput = document.getElementById("chatInput");
 const userColors = [
   "#ff0000",
   "#00ff00",
-  "#1a1ae7ff",
   "#e91916",
   "#9146FF",
   "#1E90FF",
@@ -127,3 +126,24 @@ chatInput.addEventListener("keypress", function (e) {
     sendUserMessage();
   }
 });
+
+const viewerElement = document.getElementById("viewerCount");
+
+let currentViewers = 143;
+
+function updateViewers() {
+  const change = Math.floor(Math.random() * 30) - 20;
+
+  currentViewers += change;
+
+  if (currentViewers < 0) currentViewers = 0;
+
+  const formatted = currentViewers.toLocaleString("es-ES");
+
+  viewerElement.textContent = `${formatted} espectadores`;
+
+  const nextDelay = Math.floor(Math.random() * 7000) + 1000;
+  setTimeout(updateViewers, nextDelay);
+}
+
+updateViewers();
