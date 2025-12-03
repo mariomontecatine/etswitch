@@ -4,11 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Etswitch - Graduación ETSIIT</title>
+
+    <!-- HLS -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <!-- CSS externo -->
     <link rel="stylesheet" href="styles.css" />
 
     <link rel="shortcut icon" href="UGR-MARCA.png" type="image/x-icon" />
   </head>
+
   <body>
     <nav>
       <div class="logo">
@@ -74,15 +79,15 @@
 
       <main class="content">
         <div class="video-wrapper">
-          <video id="video" autoplay muted controls></video>
-
-          <div class="live-badge">EN DIRECTO</div>
+          <video id="video" autoplay muted controls playsinline></video>
+          <div class="live-badge" id="liveBadge">Cargando…</div>
         </div>
 
         <div class="stream-info">
           <div class="stream-title">
             🎓 Ceremonia de Graduación ETSIIT 2024/2025 - Evento Principal
           </div>
+
           <div
             style="
               display: flex;
@@ -98,6 +103,7 @@
                 Ingeniería Informática y de Telecomunicaciones
               </p>
             </div>
+
             <div style="text-align: right">
               <span
                 id="viewerCount"
@@ -106,11 +112,14 @@
                   font-weight: bold;
                   font-size: 18px;
                 "
-                >143 espectadores</span
               >
+                143 espectadores
+              </span>
             </div>
           </div>
+
           <br />
+
           <div class="tags">
             <span class="tag">Español</span>
             <span class="tag">Graduación</span>
@@ -122,6 +131,7 @@
 
       <aside class="chat-container">
         <div class="chat-header">Chat del stream</div>
+
         <div class="chat-messages" id="chatArea">
           <div
             class="chat-line"
@@ -130,6 +140,7 @@
             Bienvenido al chat de la sala.
           </div>
         </div>
+
         <div class="chat-input-area">
           <input
             type="text"
@@ -144,6 +155,7 @@
       </aside>
     </div>
 
+    <!-- JavaScript externo -->
     <script src="main.js" defer></script>
   </body>
 </html>
