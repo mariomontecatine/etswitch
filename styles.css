@@ -32,9 +32,12 @@ nav {
   padding: 0 1rem;
   border-bottom: 1px solid #000;
   justify-content: space-between;
+  position: relative;
+  z-index: 200;
 }
 
 .logo {
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -276,4 +279,62 @@ video {
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    overflow-x: hidden; /* Evitar scroll lateral */
+    overflow-y: auto; /* Permitir scroll vertical natural en móvil */
+    height: 100%; /* Altura automática */
+  }
+
+  .main-container {
+    flex-direction: column; /* Poner elementos uno debajo de otro */
+    height: auto; /* La altura depende del contenido */
+    overflow: visible; /* Permitir ver todo el contenido */
+  }
+
+  /* --- SIDEBAR (OFF-CANVAS) --- */
+  .sidebar {
+    position: fixed;
+    top: 50px; /* Altura del navbar */
+    left: -240px; /* Oculto a la izquierda */
+    height: calc(100vh - 50px);
+    z-index: 150;
+    transition: transform 0.3s ease;
+    border-right: 1px solid #333;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Clase que añade JS para mostrar el menú */
+  .sidebar.active {
+    transform: translateX(240px);
+  }
+
+  /* --- CONTENIDO PRINCIPAL (VIDEO) --- */
+  .content {
+    width: 100%;
+    flex: none; /* No estirar, usar tamaño natural */
+    overflow: visible;
+  }
+
+  .video-wrapper {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9; /* Mantener proporción de video */
+  }
+
+  /* Ocultar elementos del navbar que estorban en móvil */
+  .search-bar {
+    display: none; /* Ocultar barra de búsqueda en móvil para espacio */
+  }
+
+  /* --- CHAT --- */
+  .chat-container {
+    width: 100%;
+    height: 500px; /* Altura fija para el chat en móvil */
+    border-left: none;
+    border-top: 1px solid #333;
+    flex-shrink: 0;
+  }
 }

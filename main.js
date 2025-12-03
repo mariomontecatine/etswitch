@@ -147,3 +147,45 @@ function updateViewers() {
 }
 
 updateViewers();
+
+document.addEventListener("DOMContentLoaded", () => {
+  const logoBtn = document.querySelector(".logo"); // O el ID #logoUGR
+  const sidebar = document.querySelector(".sidebar");
+  const content = document.querySelector(".content");
+
+  // 1. Toggle del Sidebar al pulsar el logo
+  logoBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    sidebar.classList.toggle("active");
+  });
+
+  content.addEventListener("click", () => {
+    if (sidebar.classList.contains("active")) {
+      sidebar.classList.remove("active");
+    }
+  });
+
+  window.sendUserMessage = function () {
+    const input = document.getElementById("chatInput");
+    const chatArea = document.getElementById("chatArea");
+    const text = input.value.trim();
+
+    if (text) {
+      const newLine = document.createElement("div");
+      newLine.className = "chat-line";
+      newLine.innerHTML = `<span class="chat-user" style="color: #9146ff">Tú:</span> ${text}`;
+
+      chatArea.appendChild(newLine);
+      input.value = "";
+
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+  };
+
+  document.getElementById("chatInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      window.sendUserMessage();
+    }
+  });
+});
