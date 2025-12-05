@@ -1,4 +1,3 @@
-// --- VIDEO HLS ---
 var video = document.getElementById("video");
 var liveBadge = document.getElementById("liveBadge");
 var videoSrc = "/hls/graduacion.m3u8";
@@ -39,7 +38,6 @@ if (Hls.isSupported()) {
   });
 }
 
-// --- CHAT SIMULADO ---
 const chatArea = document.getElementById("chatArea");
 const chatInput = document.getElementById("chatInput");
 
@@ -129,7 +127,6 @@ chatInput.addEventListener("keypress", function (e) {
   if (e.key === "Enter") sendUserMessage();
 });
 
-// --- VIEWERS ---
 const viewerElement = document.getElementById("viewerCount");
 let currentViewers = 143;
 
@@ -153,7 +150,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebar = document.querySelector(".sidebar");
   const content = document.querySelector(".content");
 
-  // 1. Toggle del Sidebar al pulsar el logo
   logoBtn.addEventListener("click", (e) => {
     e.preventDefault();
 
